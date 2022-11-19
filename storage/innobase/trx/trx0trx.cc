@@ -270,6 +270,13 @@ struct TrxFactory {
     mutex_create(LATCH_ID_TRX, &trx->mutex);
     mutex_create(LATCH_ID_TRX_UNDO, &trx->undo_mutex);
 
+    // todo start trace??
+    auto provider = opentelemetry::trace::Provider::GetTracerProvider();
+    auto tracer = provider->GetTracer("mysql", "1.0.0");
+    auto span = tracer->StartSpan("TrxFactory.init");
+    auto scope = tracer->WithActiveSpan(span);
+    span->End();
+
     lock_trx_alloc_locks(trx);
   }
 
